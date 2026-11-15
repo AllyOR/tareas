@@ -1,0 +1,796 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#F1F5F3" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#141B19" media="(prefers-color-scheme: dark)">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Día Claro">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23F1F5F3'/%3E%3Ccircle cx='32' cy='32' r='18' fill='none' stroke='%233F7D6A' stroke-width='5'/%3E%3Cpath d='M14 32a18 18 0 0 0 36 0z' fill='%233F7D6A'/%3E%3C/svg%3E">
+<style>:root{padding:env(safe-area-inset-top,0px) 0 env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Día Claro</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600&family=Outfit:wght@500;600&display=swap">
+<style>
+/* Layout: una hoja blanca con las tareas del día y, al lado (detrás de una pestaña en el celular),
+   una columna de notas en tonos pastel con el consejo del día y las ideas. */
+:root {
+  --bg: #F1F5F3;
+  --surface: #FFFFFF;
+  --ink: #25322E;
+  --muted: #66766F;
+  --line: #DCE5E0;
+  --accent: #3F7D6A;
+  --accent-ink: #FFFFFF;
+  --accent-soft: #DDECE6;
+  --danger: #A9483F;
+
+  --t-sage: #E2EFE9;   --k-sage: #3A7361;
+  --t-peach: #FBE9DF;  --k-peach: #9C5936;
+  --t-lilac: #ECE7F6;  --k-lilac: #65549F;
+  --t-sky: #E1EEF6;    --k-sky: #3A6C8E;
+  --t-butter: #F6EFD3; --k-butter: #7A671B;
+  --t-rose: #F8E4E8;   --k-rose: #9C4A5E;
+
+  --font-display: "Outfit", "Avenir Next", "Segoe UI", system-ui, sans-serif;
+  --font-body: "Figtree", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --radius: 20px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #141B19; --surface: #1C2522; --ink: #E5EEEA; --muted: #97A8A1; --line: #2C3935;
+    --accent: #7DC0AA; --accent-ink: #0F1F1A; --accent-soft: #24392F; --danger: #E39288;
+    --t-sage: #21322B;   --k-sage: #8FCBB6;
+    --t-peach: #38291F;  --k-peach: #E8AE8C;
+    --t-lilac: #2B273E;  --k-lilac: #B9ABE8;
+    --t-sky: #1E2E3A;    --k-sky: #94C4E4;
+    --t-butter: #343019; --k-butter: #DCC56E;
+    --t-rose: #382228;   --k-rose: #E8A0B2;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #141B19; --surface: #1C2522; --ink: #E5EEEA; --muted: #97A8A1; --line: #2C3935;
+  --accent: #7DC0AA; --accent-ink: #0F1F1A; --accent-soft: #24392F; --danger: #E39288;
+  --t-sage: #21322B;   --k-sage: #8FCBB6;
+  --t-peach: #38291F;  --k-peach: #E8AE8C;
+  --t-lilac: #2B273E;  --k-lilac: #B9ABE8;
+  --t-sky: #1E2E3A;    --k-sky: #94C4E4;
+  --t-butter: #343019; --k-butter: #DCC56E;
+  --t-rose: #382228;   --k-rose: #E8A0B2;
+  color-scheme: dark;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+h1, h2, p, ul { margin: 0; }
+ul { padding: 0; list-style: none; }
+button, input { font: inherit; color: inherit; }
+button { cursor: pointer; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.page {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding-block: 20px 96px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+/* Cabecera */
+.top { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.brand { display: flex; align-items: center; gap: 10px; font-family: var(--font-display); font-weight: 600; font-size: 1.125rem; letter-spacing: 0.01em; }
+.brand-mark { width: 18px; height: 18px; border-radius: 50%; border: 2px solid var(--accent); background: linear-gradient(to top, var(--accent) 50%, transparent 50%); }
+.sync { font-size: 0.8125rem; color: var(--muted); min-width: 0; }
+
+/* Pestañas (solo celular) */
+.tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; padding: 4px; background: var(--accent-soft); border-radius: 14px; }
+.tabs a { text-align: center; padding: 9px 8px; border-radius: 10px; text-decoration: none; color: var(--muted); font-weight: 600; font-size: 0.9375rem; }
+.tabs a[aria-current="page"] { background: var(--surface); color: var(--ink); }
+
+.cols { display: grid; grid-template-columns: minmax(0, 1fr); gap: 24px; align-items: start; }
+.page[data-view="tareas"] #panel-inspiracion,
+.page[data-view="inspiracion"] #panel-tareas { display: none; }
+
+@media (min-width: 860px) {
+  .tabs { display: none; }
+  .cols { grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr); gap: 32px; }
+  .page[data-view] #panel-tareas,
+  .page[data-view] #panel-inspiracion { display: flex; }
+}
+
+/* Hoja de tareas */
+.sheet { background: var(--surface); border-radius: var(--radius); padding: 22px 18px; display: flex; flex-direction: column; gap: 20px; min-width: 0; }
+@media (min-width: 560px) { .sheet { padding: 28px; } }
+
+.daybar { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 8px; }
+.daytitle { text-align: center; min-width: 0; }
+.daytitle h1 { font-family: var(--font-display); font-weight: 600; font-size: 1.75rem; line-height: 1.15; text-wrap: balance; }
+.daytitle p { color: var(--muted); font-size: 0.9375rem; }
+.today-row { display: flex; justify-content: center; margin-top: -10px; }
+
+.icon-btn { width: 36px; height: 36px; display: grid; place-items: center; border: 0; border-radius: 10px; background: transparent; color: var(--muted); flex: none; }
+.icon-btn:hover:not(:disabled) { background: var(--accent-soft); color: var(--ink); }
+.icon-btn:disabled { opacity: 0.3; cursor: default; }
+.icon-btn svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.icon-btn.del:hover:not(:disabled) { color: var(--danger); }
+
+.progress { display: flex; align-items: center; gap: 14px; }
+.ring { width: 56px; height: 56px; flex: none; }
+.ring circle { fill: none; stroke-width: 5; }
+.ring .track { stroke: var(--line); }
+.ring .arc { stroke: var(--accent); stroke-linecap: round; transform: rotate(-90deg); transform-origin: 28px 28px; transition: stroke-dashoffset 0.35s ease; }
+.ring text { fill: var(--ink); font-family: var(--font-body); font-size: 13px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.progress-text { min-width: 0; }
+.progress-text strong { display: block; font-weight: 600; font-variant-numeric: tabular-nums; }
+.progress-text span { color: var(--muted); font-size: 0.9375rem; }
+
+.add { display: flex; gap: 8px; }
+.add input { flex: 1; min-width: 0; padding: 12px 14px; border: 1.5px solid var(--line); border-radius: 14px; background: var(--bg); }
+.add input::placeholder { color: var(--muted); }
+.add input:focus { outline: none; border-color: var(--accent); }
+.btn { border: 0; border-radius: 14px; padding: 12px 18px; background: var(--accent); color: var(--accent-ink); font-weight: 600; flex: none; }
+.btn:disabled, .add input:disabled { opacity: 0.55; cursor: default; }
+.btn-quiet { border: 0; background: transparent; color: var(--accent); font-weight: 600; font-size: 0.875rem; padding: 6px 8px; border-radius: 8px; }
+.btn-quiet:hover:not(:disabled) { background: var(--accent-soft); }
+.btn-quiet:disabled { opacity: 0.45; cursor: default; }
+
+.carry { background: var(--t-butter); color: var(--ink); border-radius: 14px; padding: 12px 14px; display: flex; align-items: center; justify-content: space-between; gap: 6px 12px; flex-wrap: wrap; font-size: 0.9375rem; }
+.carry .btn-quiet { color: var(--k-butter); }
+.carry-actions { display: flex; gap: 4px; }
+
+.group { display: flex; flex-direction: column; gap: 4px; }
+.group h2 { font-size: 0.75rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); display: flex; gap: 8px; align-items: baseline; }
+.group h2 .count { font-variant-numeric: tabular-nums; letter-spacing: 0; }
+.hint { color: var(--muted); font-size: 0.9375rem; padding: 10px 0 2px; }
+
+.task { display: flex; align-items: center; gap: 12px; padding: 9px 0; border-bottom: 1px solid var(--line); }
+.task:last-child { border-bottom: 0; }
+.chk { appearance: none; -webkit-appearance: none; width: 24px; height: 24px; margin: 0; flex: none; border: 2px solid var(--muted); border-radius: 50%; background: transparent; display: grid; place-items: center; cursor: pointer; transition: background-color 0.15s ease, border-color 0.15s ease; }
+.chk:hover { border-color: var(--accent); }
+.chk:checked { background: var(--accent); border-color: var(--accent); }
+.chk:checked::after { content: ""; width: 6px; height: 11px; border: solid var(--accent-ink); border-width: 0 2px 2px 0; transform: translateY(-1px) rotate(45deg); }
+.t-text { flex: 1; min-width: 0; overflow-wrap: anywhere; cursor: pointer; }
+.task.is-done .t-text { color: var(--muted); text-decoration: line-through; text-decoration-color: var(--line); }
+.t-time { color: var(--muted); font-size: 0.8125rem; font-variant-numeric: tabular-nums; flex: none; }
+.t-actions { display: flex; flex: none; }
+.t-actions .icon-btn { width: 32px; height: 32px; }
+
+/* Columna de inspiración */
+.notes { display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+.notes-head { display: flex; flex-direction: column; gap: 2px; padding: 4px 2px 2px; }
+.notes-head h2 { font-family: var(--font-display); font-weight: 600; font-size: 1.375rem; }
+.notes-head p { color: var(--muted); font-size: 0.9375rem; }
+
+.note { background: var(--tint); border-radius: 16px; padding: 16px; display: flex; flex-direction: column; gap: 8px; }
+.note .label { font-size: 0.75rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--tint-ink); }
+.note p { max-width: 62ch; }
+.note-actions { display: flex; flex-wrap: wrap; gap: 4px; margin: 2px 0 -6px -8px; }
+.note .btn-quiet { color: var(--tint-ink); }
+.note .btn-quiet:hover:not(:disabled) { background: var(--surface); }
+.note.lead { padding: 20px; }
+.note.lead p { font-family: var(--font-display); font-weight: 500; font-size: 1.25rem; line-height: 1.35; text-wrap: balance; }
+
+.tint-sage { --tint: var(--t-sage); --tint-ink: var(--k-sage); }
+.tint-peach { --tint: var(--t-peach); --tint-ink: var(--k-peach); }
+.tint-lilac { --tint: var(--t-lilac); --tint-ink: var(--k-lilac); }
+.tint-sky { --tint: var(--t-sky); --tint-ink: var(--k-sky); }
+.tint-butter { --tint: var(--t-butter); --tint-ink: var(--k-butter); }
+.tint-rose { --tint: var(--t-rose); --tint-ink: var(--k-rose); }
+
+/* Aviso inferior */
+.toast-wrap { position: fixed; left: 0; right: 0; bottom: 0; display: flex; justify-content: center; pointer-events: none; z-index: 20;
+  padding: 0 max(16px, env(safe-area-inset-right, 0px)) calc(16px + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px)); }
+.toast { pointer-events: auto; background: var(--ink); color: var(--bg); border-radius: 14px; padding: 10px 10px 10px 16px; display: flex; align-items: center; gap: 12px; font-size: 0.9375rem; max-width: 100%; }
+.toast span { min-width: 0; overflow-wrap: anywhere; }
+.toast button { border: 0; background: transparent; color: var(--bg); font-weight: 600; text-decoration: underline; padding: 6px 8px; border-radius: 8px; flex: none; }
+.toast:not(.has-action) { padding-right: 16px; }
+
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+<div class="page" id="page" data-view="tareas">
+  <header class="top">
+    <div class="brand"><span class="brand-mark" aria-hidden="true"></span>Día Claro</div>
+    <p class="sync" id="sync" role="status">Cargando…</p>
+  </header>
+
+  <nav class="tabs" aria-label="Secciones">
+    <a href="#tareas" id="tab-tareas" aria-current="page">Tareas</a>
+    <a href="#inspiracion" id="tab-inspiracion">Inspiración</a>
+  </nav>
+
+  <main class="cols">
+    <section class="sheet" id="panel-tareas" aria-labelledby="day-title">
+      <div class="daybar">
+        <button class="icon-btn" id="prev" type="button" aria-label="Día anterior"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button>
+        <div class="daytitle">
+          <h1 id="day-title">Hoy</h1>
+          <p id="day-date"></p>
+        </div>
+        <button class="icon-btn" id="next" type="button" aria-label="Día siguiente"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button>
+      </div>
+      <div class="today-row" id="today-row" hidden>
+        <button class="btn-quiet" id="go-today" type="button">Volver a hoy</button>
+      </div>
+
+      <div class="progress">
+        <svg class="ring" viewBox="0 0 56 56" role="img" aria-labelledby="ring-label">
+          <title id="ring-label">Avance del día</title>
+          <circle class="track" cx="28" cy="28" r="24"/>
+          <circle class="arc" id="ring-arc" cx="28" cy="28" r="24" stroke-dasharray="150.8" stroke-dashoffset="150.8"/>
+          <text id="ring-num" x="28" y="32.5" text-anchor="middle">–</text>
+        </svg>
+        <div class="progress-text">
+          <strong id="prog-main">Cargando tus tareas…</strong>
+          <span id="prog-sub"></span>
+        </div>
+      </div>
+
+      <form class="add" id="add-form" autocomplete="off">
+        <input id="nueva-tarea" type="text" maxlength="200" placeholder="Anota una tarea…" aria-label="Nueva tarea" enterkeyhint="done" disabled>
+        <button class="btn" id="add-btn" type="submit" disabled>Añadir</button>
+      </form>
+
+      <div class="carry" id="carry" hidden>
+        <span id="carry-text"></span>
+        <div class="carry-actions">
+          <button class="btn-quiet" id="carry-yes" type="button">Traerlas a hoy</button>
+          <button class="btn-quiet" id="carry-no" type="button">Ahora no</button>
+        </div>
+      </div>
+
+      <div id="lists" style="display:contents">
+        <div class="group">
+          <h2>Por hacer <span class="count" id="todo-count"></span></h2>
+          <ul id="todo-list"></ul>
+          <p class="hint" id="todo-empty" hidden></p>
+        </div>
+        <div class="group" id="done-group" hidden>
+          <h2>Hechas <span class="count" id="done-count"></span></h2>
+          <ul id="done-list"></ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="notes" id="panel-inspiracion" aria-labelledby="notes-title">
+      <div class="notes-head">
+        <h2 id="notes-title">Inspiración</h2>
+        <p>Una selección nueva cada día. Si algo te sirve, pásalo a tu lista.</p>
+      </div>
+      <div id="notes-list" style="display:contents"></div>
+    </section>
+  </main>
+</div>
+
+<div class="toast-wrap" aria-live="polite"><div class="toast" id="toast" hidden><span id="toast-text"></span><button id="toast-action" type="button" hidden></button></div></div>
+
+<script>
+(function () {
+  'use strict';
+
+  /* ---------- Contenido de la columna de inspiración ---------- */
+  const CONSEJOS = [
+    'Elige una sola tarea importante y empieza por ella antes de abrir el correo o el chat.',
+    'Deja lista esta noche la primera tarea de mañana. Empezar cuesta menos cuando ya sabes por dónde.',
+    'Si algo toma menos de dos minutos, hazlo ahora y sácalo de la lista.',
+    'Reserva un bloque de 45 minutos sin notificaciones para lo que más te pesa.',
+    'Revisa tu lista al mediodía. Tacha, mueve o borra lo que ya no tiene sentido hoy.',
+    'Anota las ideas sueltas apenas aparezcan. La cabeza es para pensar, no para guardar pendientes.',
+    'Termina el día escribiendo tres cosas que sí avanzaste.',
+    'Di que no a una cosa hoy para poder decir que sí a lo que importa.',
+    'Divide la tarea grande en un primer paso que puedas terminar en 15 minutos.',
+    'Agrupa los recados pequeños y hazlos de una sola vez.',
+    'Ponle hora de cierre a tu jornada y respétala como si fuera una reunión.',
+    'Empieza por lo difícil mientras tienes la energía de la mañana.',
+    'Una lista corta que se cumple vale más que una larga que se arrastra. Hoy apunta a cinco tareas.',
+    'Antes de aceptar algo nuevo, mira qué tienes ya anotado para esta semana.'
+  ];
+  const CATS = [
+    { id: 'habitos', label: 'Hábito saludable', tint: 'sage', add: true, items: [
+      'Toma un vaso de agua al despertar, antes del café.',
+      'Camina 10 minutos después de almorzar.',
+      'Cada 20 minutos de pantalla, mira algo a 6 metros durante 20 segundos.',
+      'Levántate y estírate cada hora que pases en la silla.',
+      'Apaga las pantallas 30 minutos antes de dormir.',
+      'Suma una fruta o una verdura a la comida que menos tenga.',
+      'Acuéstate y levántate a la misma hora, también el fin de semana.',
+      'Respira hondo cinco veces antes de pasar de una tarea a otra.',
+      'Sal a tomar luz natural durante la mañana, aunque sean cinco minutos.',
+      'Sube por las escaleras cuando sean tres pisos o menos.',
+      'Come sin el celular en la mesa al menos una vez al día.'
+    ] },
+    { id: 'tips', label: 'Tip rápido', tint: 'sky', add: true, items: [
+      'Deja el celular en otra habitación mientras haces la tarea más importante.',
+      'Usa un temporizador: 25 minutos de trabajo, 5 de pausa.',
+      'Escribe cada tarea empezando con un verbo: llamar, enviar, revisar.',
+      'Deja a la vista solo lo que vas a usar en la próxima hora.',
+      'Responde mensajes en dos o tres momentos fijos del día, no a cada rato.',
+      'Cuando te trabes, escribe en una línea cuál es el siguiente paso concreto.',
+      'Prepara la ropa y el bolso la noche anterior.',
+      'Lleva una lista aparte para lo que depende de otra persona.',
+      'Cierra las pestañas que no usaste en la última hora.',
+      'Ponle fecha a lo que no harás hoy, o bórralo.'
+    ] },
+    { id: 'motivacion', label: 'Motivación', tint: 'peach', add: false, items: [
+      'No tienes que hacerlo todo hoy. Tienes que hacer lo de hoy.',
+      'Lo que avanzas un poco cada día termina siendo mucho.',
+      'Empezar mal sigue siendo empezar.',
+      'Ya resolviste días más difíciles que este.',
+      'El progreso pequeño también cuenta. Táchalo con gusto.',
+      'Tu ritmo es válido aunque no se parezca al de nadie más.',
+      'Descansar también es parte del trabajo bien hecho.',
+      'La constancia le gana a la perfección.',
+      'Cada tarea tachada es una promesa que te cumpliste.',
+      'Si hoy solo alcanzó para una cosa, que sea una cosa bien hecha.'
+    ] },
+    { id: 'mejora', label: 'Para mejorar tus hábitos', tint: 'lilac', add: true, items: [
+      'Pega el hábito nuevo a uno que ya tienes: después de cepillarte los dientes, lee una página.',
+      'Empieza tan pequeño que no tenga sentido saltárselo: dos minutos, una flexión, un párrafo.',
+      'Deja a la vista lo que quieres hacer y guarda lejos lo que quieres evitar.',
+      'Marca en un calendario cada día cumplido. Ver la cadena ayuda a no romperla.',
+      'Si fallas un día, vuelve al siguiente. La regla es no fallar dos veces seguidas.',
+      'Cambia un hábito a la vez. Dale tres o cuatro semanas antes de sumar otro.',
+      'Define cuándo y dónde: «a las 7:00, en la cocina», no «en algún momento».',
+      'Cuéntale tu meta a alguien que te pregunte cómo vas.',
+      'Date un pequeño gusto justo después de cumplir, para asociar el hábito con algo agradable.',
+      'Cada domingo, revisa qué hábito te costó y hazlo más fácil, no más estricto.'
+    ] },
+    { id: 'proyectos', label: 'Idea de proyecto', tint: 'rose', add: true, items: [
+      'Arma un recetario familiar con las recetas que solo se saben de memoria.',
+      'Digitaliza y ordena las fotos de un año entero en un solo álbum.',
+      'Aprende 20 frases útiles en un idioma nuevo y úsalas en una conversación.',
+      'Planta tres hierbas de cocina en macetas: albahaca, perejil y hierbabuena.',
+      'Escribe una carta a tu yo de dentro de un año y guárdala con fecha.',
+      'Haz un presupuesto simple del mes en una hoja de cálculo.',
+      'Ordena un cajón o un estante por semana durante un mes.',
+      'Graba a una persona mayor de tu familia contando su historia.',
+      'Lee un libro corto por mes y anota una idea de cada uno.',
+      'Diseña una ruta de caminata por tu barrio y recórrela cada domingo.',
+      'Crea una lista de música para cada momento del día: enfocarte, cocinar, descansar.',
+      'Aprende a hacer pan en casa y perfecciona una sola receta.',
+      'Empieza un cuaderno de ideas de negocio: una por día durante 30 días.'
+    ] }
+  ];
+
+  /* ---------- Utilidades ---------- */
+  const $ = (id) => document.getElementById(id);
+  const pad = (n) => String(n).padStart(2, '0');
+  const keyOf = (d) => d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate());
+  const fromKey = (k) => { const p = k.split('-').map(Number); return new Date(p[0], p[1] - 1, p[2]); };
+  const shift = (k, n) => { const d = fromKey(k); d.setDate(d.getDate() + n); return keyOf(d); };
+  const todayKey = () => keyOf(new Date());
+  const dayDiff = (a, b) => Math.round((fromKey(a) - fromKey(b)) / 86400000);
+  const newId = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+  const hhmm = (ms) => { const d = new Date(ms); return pad(d.getHours()) + ':' + pad(d.getMinutes()); };
+  const wait = (ms) => new Promise((r) => setTimeout(r, ms));
+  const cap = (s) => s.charAt(0).toUpperCase() + s.slice(1);
+  const seed = (str) => { let h = 2166136261; for (let i = 0; i < str.length; i++) { h ^= str.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; };
+  const fmtWeekday = new Intl.DateTimeFormat('es', { weekday: 'long' });
+  const fmtDate = new Intl.DateTimeFormat('es', { weekday: 'long', day: 'numeric', month: 'long' });
+
+  function clean(list) {
+    if (!Array.isArray(list)) return [];
+    return list
+      .filter((t) => t && typeof t.text === 'string' && t.text.trim())
+      .map((t) => ({
+        id: String(t.id || newId()),
+        text: t.text.trim().slice(0, 200),
+        done: !!t.done,
+        doneAt: typeof t.doneAt === 'number' ? t.doneAt : null
+      }));
+  }
+  const copy = (tasks) => tasks.map((t) => ({ id: t.id, text: t.text, done: t.done, doneAt: t.doneAt }));
+
+  /* ---------- Guardado: cuenta (db) o este navegador ---------- */
+  const store = { mode: 'boot', db: null, uid: null };
+  const lsKey = (day) => 'diaclaro:' + day;
+  function localRead(day) {
+    try { const raw = localStorage.getItem(lsKey(day)); const v = raw ? JSON.parse(raw) : null; return v && Array.isArray(v.tasks) ? v.tasks : []; }
+    catch (e) { return []; }
+  }
+  function localWrite(day, tasks) {
+    try { if (tasks.length) localStorage.setItem(lsKey(day), JSON.stringify({ tasks: tasks })); else localStorage.removeItem(lsKey(day)); return true; }
+    catch (e) { return false; }
+  }
+  const dayRef = (day) => store.db.collection('data/users/' + store.uid).doc('dia-' + day);
+
+  async function writeDay(day, tasks) {
+    if (store.mode === 'local') { if (!localWrite(day, tasks)) throw { code: 'local' }; return; }
+    const ref = dayRef(day);
+    const run = () => (tasks.length ? ref.set({ tasks: tasks, updatedAt: Date.now() }) : ref.delete());
+    try { await run(); }
+    catch (e) {
+      if (e && e.code === 'unavailable') { await wait(600 + Math.random() * 600); await run(); }
+      else throw e;
+    }
+  }
+
+  const state = { day: todayKey(), tasks: [], loaded: false, failed: false, slow: false };
+  let saveState = 'saved';
+  let saving = Promise.resolve();
+  let pending = null;
+  let saveTimer = null;
+  let unsub = null;
+  let loadTimer = null;
+  const busy = new Map();
+  const isBusy = (day) => (pending && pending.day === day) || (busy.get(day) || 0) > 0;
+
+  function enqueue(day, tasks) {
+    busy.set(day, (busy.get(day) || 0) + 1);
+    saveState = 'saving';
+    renderStatus();
+    saving = saving
+      .then(() => writeDay(day, tasks))
+      .then(() => true, () => false)
+      .then((ok) => {
+        busy.set(day, busy.get(day) - 1);
+        const idle = !pending && !Array.from(busy.values()).some((n) => n > 0);
+        if (!ok) saveState = 'error'; else if (idle) saveState = 'saved';
+        renderStatus();
+      });
+    return saving;
+  }
+  function flush() {
+    clearTimeout(saveTimer);
+    if (!pending) return saving;
+    const job = pending;
+    pending = null;
+    return enqueue(job.day, job.tasks);
+  }
+  function queueSave() {
+    pending = { day: state.day, tasks: copy(state.tasks) };
+    saveState = 'saving';
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(flush, 500);
+    renderStatus();
+  }
+
+  function openDay(day) {
+    flush();
+    if (unsub) { unsub(); unsub = null; }
+    clearTimeout(loadTimer);
+    state.day = day; state.tasks = []; state.loaded = false; state.failed = false; state.slow = false;
+    if (store.mode === 'local') {
+      state.tasks = clean(localRead(day));
+      state.loaded = true;
+    } else if (store.mode === 'cloud') {
+      loadTimer = setTimeout(() => { state.slow = true; renderStatus(); }, 10000);
+      unsub = dayRef(day).onSnapshot((snap) => {
+        if (day !== state.day) return;
+        if (!snap.metadata.fromCache) { clearTimeout(loadTimer); state.slow = false; }
+        if (isBusy(day) && state.loaded) { renderStatus(); return; }
+        const data = snap.exists ? snap.data() : null;
+        const next = data ? clean(data.tasks) : [];
+        const changed = !state.loaded || JSON.stringify(next) !== JSON.stringify(state.tasks);
+        state.tasks = next;
+        state.loaded = true;
+        if (changed) render(); else renderStatus();
+      }, () => {
+        if (day !== state.day) return;
+        clearTimeout(loadTimer);
+        state.loaded = true; state.failed = true;
+        render();
+      });
+    }
+    render();
+    checkYesterday();
+  }
+
+  /* ---------- Pendientes de ayer ---------- */
+  let carry = null;
+  let carryDismissed = false;
+  async function checkYesterday() {
+    carry = null;
+    renderCarry();
+    const t = todayKey();
+    if (state.day !== t || carryDismissed || store.mode === 'boot') return;
+    const y = shift(t, -1);
+    let tasks = [];
+    try {
+      await saving;
+      if (store.mode === 'local') tasks = clean(localRead(y));
+      else { const s = await dayRef(y).get(); const d = s.exists ? s.data() : null; tasks = d ? clean(d.tasks) : []; }
+    } catch (e) { return; }
+    if (state.day !== t) return;
+    if (tasks.some((x) => !x.done)) { carry = { day: y, tasks: tasks }; renderCarry(); }
+  }
+  function carryOver() {
+    if (!carry || !canEdit() || state.day !== shift(carry.day, 1)) return;
+    const pend = carry.tasks.filter((t) => !t.done);
+    const rest = carry.tasks.filter((t) => t.done);
+    const from = carry.day;
+    state.tasks = state.tasks.concat(pend.map((t) => ({ id: newId(), text: t.text, done: false, doneAt: null })));
+    carry = null;
+    render();
+    queueSave();
+    flush();
+    enqueue(from, rest);
+    toast(pend.length === 1 ? 'Se pasó 1 tarea de ayer a hoy.' : 'Se pasaron ' + pend.length + ' tareas de ayer a hoy.');
+  }
+
+  /* ---------- Acciones sobre tareas ---------- */
+  const canEdit = () => state.loaded && !state.failed;
+  function commit(focusSel) {
+    render();
+    queueSave();
+    if (focusSel) { const el = document.querySelector(focusSel); if (el && !el.disabled) el.focus(); }
+  }
+  function addTask(text) {
+    const t = (text || '').trim().slice(0, 200);
+    if (!t || !canEdit()) return false;
+    state.tasks.push({ id: newId(), text: t, done: false, doneAt: null });
+    commit();
+    return true;
+  }
+  function toggle(id) {
+    const t = state.tasks.find((x) => x.id === id);
+    if (!t || !canEdit()) return;
+    t.done = !t.done;
+    t.doneAt = t.done ? Date.now() : null;
+    commit('#chk-' + id);
+  }
+  function move(id, dir) {
+    if (!canEdit()) return;
+    const idx = state.tasks.findIndex((x) => x.id === id);
+    if (idx < 0) return;
+    let j = idx + dir;
+    while (j >= 0 && j < state.tasks.length && state.tasks[j].done) j += dir;
+    if (j < 0 || j >= state.tasks.length) return;
+    const tmp = state.tasks[idx]; state.tasks[idx] = state.tasks[j]; state.tasks[j] = tmp;
+    const base = '.task[data-id="' + id + '"] ';
+    commit(base + '[data-act="' + (dir < 0 ? 'up' : 'down') + '"]');
+    const again = document.querySelector(base + '[data-act="' + (dir < 0 ? 'up' : 'down') + '"]');
+    if (again && again.disabled) { const other = document.querySelector(base + '[data-act="' + (dir < 0 ? 'down' : 'up') + '"]'); if (other) other.focus(); }
+  }
+  function remove(id) {
+    if (!canEdit()) return;
+    const idx = state.tasks.findIndex((x) => x.id === id);
+    if (idx < 0) return;
+    const gone = state.tasks.splice(idx, 1)[0];
+    const day = state.day;
+    commit();
+    toast('Tarea eliminada.', 'Deshacer', () => {
+      if (state.day !== day || !canEdit() || state.tasks.some((x) => x.id === gone.id)) return;
+      state.tasks.splice(Math.min(idx, state.tasks.length), 0, gone);
+      commit();
+    });
+  }
+
+  /* ---------- Pintado ---------- */
+  const els = {
+    page: $('page'), sync: $('sync'), title: $('day-title'), date: $('day-date'), todayRow: $('today-row'),
+    arc: $('ring-arc'), num: $('ring-num'), progMain: $('prog-main'), progSub: $('prog-sub'),
+    input: $('nueva-tarea'), addBtn: $('add-btn'), carry: $('carry'), carryText: $('carry-text'),
+    todo: $('todo-list'), todoCount: $('todo-count'), todoEmpty: $('todo-empty'),
+    doneGroup: $('done-group'), done: $('done-list'), doneCount: $('done-count'),
+    toast: $('toast'), toastText: $('toast-text'), toastAction: $('toast-action')
+  };
+  const RING = 150.8;
+  const ICON = {
+    up: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 14l6-6 6 6"/></svg>',
+    down: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 10l6 6 6-6"/></svg>',
+    del: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7l10 10M17 7L7 17"/></svg>'
+  };
+  function dayName(day) {
+    const diff = dayDiff(day, todayKey());
+    if (diff === 0) return 'Hoy';
+    if (diff === -1) return 'Ayer';
+    if (diff === 1) return 'Mañana';
+    return cap(fmtWeekday.format(fromKey(day)));
+  }
+  function iconBtn(act, label, disabled) {
+    const b = document.createElement('button');
+    b.type = 'button'; b.className = 'icon-btn ' + act; b.dataset.act = act; b.disabled = !!disabled;
+    b.setAttribute('aria-label', label);
+    b.innerHTML = ICON[act];
+    return b;
+  }
+  function row(t, i, n) {
+    const li = document.createElement('li');
+    li.className = 'task' + (t.done ? ' is-done' : '');
+    li.dataset.id = t.id;
+    const chk = document.createElement('input');
+    chk.type = 'checkbox'; chk.className = 'chk'; chk.id = 'chk-' + t.id; chk.checked = t.done;
+    const lab = document.createElement('label');
+    lab.className = 't-text'; lab.htmlFor = chk.id; lab.textContent = t.text;
+    li.append(chk, lab);
+    if (t.done && t.doneAt) {
+      const tm = document.createElement('span');
+      tm.className = 't-time'; tm.textContent = hhmm(t.doneAt); tm.title = 'Hora en que la marcaste';
+      li.append(tm);
+    }
+    const act = document.createElement('div');
+    act.className = 't-actions';
+    if (!t.done) act.append(iconBtn('up', 'Subir: ' + t.text, i === 0), iconBtn('down', 'Bajar: ' + t.text, i === n - 1));
+    act.append(iconBtn('del', 'Eliminar: ' + t.text, false));
+    li.append(act);
+    return li;
+  }
+  function renderDay() {
+    const isToday = state.day === todayKey();
+    els.title.textContent = dayName(state.day);
+    els.date.textContent = fmtDate.format(fromKey(state.day));
+    els.todayRow.hidden = isToday;
+  }
+  function renderTasks() {
+    const ready = canEdit();
+    els.input.disabled = !ready;
+    els.addBtn.disabled = !ready;
+    const pend = state.tasks.filter((t) => !t.done);
+    const done = state.tasks.filter((t) => t.done).sort((a, b) => (a.doneAt || 0) - (b.doneAt || 0));
+    const total = state.tasks.length;
+    const ratio = total ? done.length / total : 0;
+    els.arc.style.strokeDashoffset = String(RING * (1 - ratio));
+    els.num.textContent = total ? Math.round(ratio * 100) + '%' : '–';
+    if (!state.loaded) {
+      els.progMain.textContent = 'Cargando tus tareas…';
+      els.progSub.textContent = '';
+    } else if (state.failed) {
+      els.progMain.textContent = 'No pudimos abrir tus tareas';
+      els.progSub.textContent = 'Vuelve a abrir la página en unos minutos.';
+    } else if (total === 0) {
+      els.progMain.textContent = 'Nada anotado todavía';
+      els.progSub.textContent = 'Escribe abajo lo primero que quieras hacer.';
+    } else {
+      els.progMain.textContent = done.length + ' de ' + total + (total === 1 ? ' tarea hecha' : ' tareas hechas');
+      els.progSub.textContent = pend.length === 0 ? 'Día completo. Buen trabajo.' : (pend.length === 1 ? 'Te falta 1.' : 'Te faltan ' + pend.length + '.');
+    }
+    els.todo.replaceChildren.apply(els.todo, pend.map((t, i) => row(t, i, pend.length)));
+    els.todoCount.textContent = pend.length ? String(pend.length) : '';
+    const showEmpty = state.loaded && !state.failed && pend.length === 0;
+    els.todoEmpty.hidden = !showEmpty;
+    if (showEmpty) els.todoEmpty.textContent = total === 0 ? 'Aquí aparecerán tus tareas. Márcalas a medida que las termines.' : 'No queda nada pendiente.';
+    els.doneGroup.hidden = done.length === 0;
+    els.done.replaceChildren.apply(els.done, done.map((t, i) => row(t, i, done.length)));
+    els.doneCount.textContent = done.length ? String(done.length) : '';
+  }
+  function renderCarry() {
+    const show = !!carry && canEdit() && state.day === todayKey();
+    els.carry.hidden = !show;
+    if (!show) return;
+    const n = carry.tasks.filter((t) => !t.done).length;
+    els.carryText.textContent = n === 1 ? 'Ayer quedó 1 tarea sin hacer.' : 'Ayer quedaron ' + n + ' tareas sin hacer.';
+    $('carry-yes').textContent = n === 1 ? 'Traerla a hoy' : 'Traerlas a hoy';
+  }
+  function renderStatus() {
+    let msg;
+    if (store.mode === 'boot') msg = 'Cargando…';
+    else if (state.failed) msg = 'Sin acceso a tus tareas guardadas';
+    else if (saveState === 'error') msg = 'No se pudo guardar el último cambio';
+    else if (saveState === 'saving') msg = 'Guardando…';
+    else if (state.slow) msg = state.loaded ? 'Sin conexión: puede estar desactualizado' : 'Tarda en cargar, seguimos intentando';
+    else msg = store.mode === 'cloud' ? 'Guardado en tu cuenta' : 'Guardado solo en este navegador';
+    if (els.sync.textContent !== msg) els.sync.textContent = msg;
+  }
+  function render() { renderDay(); renderTasks(); renderCarry(); renderStatus(); }
+
+  /* ---------- Aviso inferior ---------- */
+  let toastTimer = null;
+  let toastFn = null;
+  function toast(msg, actionLabel, fn) {
+    clearTimeout(toastTimer);
+    els.toastText.textContent = msg;
+    toastFn = fn || null;
+    els.toastAction.hidden = !fn;
+    els.toastAction.textContent = actionLabel || '';
+    els.toast.classList.toggle('has-action', !!fn);
+    els.toast.hidden = false;
+    toastTimer = setTimeout(() => { els.toast.hidden = true; toastFn = null; }, fn ? 6000 : 3000);
+  }
+  els.toastAction.addEventListener('click', () => {
+    const fn = toastFn;
+    clearTimeout(toastTimer); els.toast.hidden = true; toastFn = null;
+    if (fn) fn();
+  });
+
+  /* ---------- Inspiración ---------- */
+  const offsets = {};
+  function pick(cat) {
+    const base = seed(todayKey() + ':' + cat.id) % cat.items.length;
+    return cat.items[(base + (offsets[cat.id] || 0)) % cat.items.length];
+  }
+  function buildNotes() {
+    const host = $('notes-list');
+    const lead = document.createElement('article');
+    lead.className = 'note lead tint-butter';
+    const ll = document.createElement('span'); ll.className = 'label'; ll.textContent = 'Consejo del día';
+    const lp = document.createElement('p'); lp.textContent = CONSEJOS[seed(todayKey() + ':consejo') % CONSEJOS.length];
+    lead.append(ll, lp);
+    host.append(lead);
+    CATS.forEach((cat) => {
+      const card = document.createElement('article');
+      card.className = 'note tint-' + cat.tint;
+      const label = document.createElement('span'); label.className = 'label'; label.textContent = cat.label;
+      const p = document.createElement('p'); p.id = 'note-' + cat.id; p.textContent = pick(cat);
+      const actions = document.createElement('div'); actions.className = 'note-actions';
+      const other = document.createElement('button');
+      other.type = 'button'; other.className = 'btn-quiet'; other.textContent = 'Ver otro';
+      other.setAttribute('aria-controls', p.id);
+      other.addEventListener('click', () => { offsets[cat.id] = (offsets[cat.id] || 0) + 1; p.textContent = pick(cat); });
+      actions.append(other);
+      if (cat.add) {
+        const add = document.createElement('button');
+        add.type = 'button'; add.className = 'btn-quiet'; add.textContent = 'Añadir a mis tareas';
+        add.addEventListener('click', () => {
+          if (addTask(p.textContent)) toast('Añadida a tus tareas de ' + dayName(state.day).toLowerCase() + '.');
+          else toast('Tus tareas aún no están listas. Inténtalo en un momento.');
+        });
+        actions.append(add);
+      }
+      card.append(label, p, actions);
+      host.append(card);
+    });
+  }
+
+  /* ---------- Eventos ---------- */
+  $('add-form').addEventListener('submit', (e) => {
+    e.preventDefault();
+    if (addTask(els.input.value)) { els.input.value = ''; els.input.focus(); }
+  });
+  $('prev').addEventListener('click', () => openDay(shift(state.day, -1)));
+  $('next').addEventListener('click', () => openDay(shift(state.day, 1)));
+  $('go-today').addEventListener('click', () => openDay(todayKey()));
+  $('carry-yes').addEventListener('click', carryOver);
+  $('carry-no').addEventListener('click', () => { carryDismissed = true; carry = null; renderCarry(); });
+  $('lists').addEventListener('change', (e) => {
+    if (e.target.classList && e.target.classList.contains('chk')) toggle(e.target.closest('.task').dataset.id);
+  });
+  $('lists').addEventListener('click', (e) => {
+    const b = e.target.closest ? e.target.closest('button[data-act]') : null;
+    if (!b) return;
+    const id = b.closest('.task').dataset.id;
+    if (b.dataset.act === 'up') move(id, -1);
+    else if (b.dataset.act === 'down') move(id, 1);
+    else if (b.dataset.act === 'del') remove(id);
+  });
+
+  function applyView() {
+    const view = location.hash === '#inspiracion' ? 'inspiracion' : 'tareas';
+    els.page.dataset.view = view;
+    ['tareas', 'inspiracion'].forEach((v) => {
+      const a = $('tab-' + v);
+      if (v === view) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current');
+    });
+  }
+  window.addEventListener('hashchange', applyView);
+  window.addEventListener('pagehide', flush);
+  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') flush(); });
+
+  let lastToday = todayKey();
+  setInterval(() => { const t = todayKey(); if (t !== lastToday) { lastToday = t; renderDay(); renderCarry(); } }, 60000);
+
+  /* ---------- Arranque ---------- */
+  async function boot() {
+    applyView();
+    buildNotes();
+    render();
+    let db = null, user = null, uid = null;
+    try {
+      if (window.claude && typeof window.claude.use === 'function') {
+        const got = await Promise.all([window.claude.use('db'), window.claude.use('user')]);
+        db = got[0]; user = got[1];
+      }
+      uid = user ? await user.id() : null;
+    } catch (e) { db = null; uid = null; }
+    if (db && uid) { store.mode = 'cloud'; store.db = db; store.uid = uid; }
+    else store.mode = 'local';
+    openDay(state.day);
+  }
+  boot();
+})();
+</script>
+</body>
+</html>
