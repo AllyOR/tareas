@@ -7,10 +7,10 @@
 <meta name="theme-color" content="#141B19" media="(prefers-color-scheme: dark)">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="Día Claro">
+<meta name="apple-mobile-web-app-title" content="To do doo">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23F1F5F3'/%3E%3Ccircle cx='32' cy='32' r='18' fill='none' stroke='%233F7D6A' stroke-width='5'/%3E%3Cpath d='M14 32a18 18 0 0 0 36 0z' fill='%233F7D6A'/%3E%3C/svg%3E">
 <style>:root{padding:env(safe-area-inset-top,0px) 0 env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
-<title>Día Claro</title>
+<title>To do doo</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600&family=Outfit:wght@500;600&display=swap">
 <style>
 /* Layout: una hoja blanca con las tareas del día y, al lado (detrás de una pestaña en el celular),
@@ -61,8 +61,10 @@
   --t-rose: #382228;   --k-rose: #E8A0B2;
   color-scheme: dark;
 }
+:root[data-theme="light"] { color-scheme: light; }
 
 *, *::before, *::after { box-sizing: border-box; }
+[hidden] { display: none !important; }
 body {
   background: var(--bg);
   color: var(--ink);
@@ -89,10 +91,18 @@ button { cursor: pointer; }
 }
 
 /* Cabecera */
-.top { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.top { display: flex; align-items: center; gap: 6px 12px; flex-wrap: wrap; }
 .brand { display: flex; align-items: center; gap: 10px; font-family: var(--font-display); font-weight: 600; font-size: 1.125rem; letter-spacing: 0.01em; }
 .brand-mark { width: 18px; height: 18px; border-radius: 50%; border: 2px solid var(--accent); background: linear-gradient(to top, var(--accent) 50%, transparent 50%); }
-.sync { font-size: 0.8125rem; color: var(--muted); min-width: 0; }
+.sync { font-size: 0.8125rem; color: var(--muted); min-width: 0; flex-basis: 100%; order: 3; }
+.tools { display: flex; align-items: center; gap: 6px; margin-left: auto; }
+.seg { display: flex; gap: 2px; padding: 3px; background: var(--accent-soft); border-radius: 11px; }
+.seg button { border: 0; background: transparent; color: var(--muted); font-weight: 600; font-size: 0.8125rem; letter-spacing: 0.03em; padding: 6px 10px; border-radius: 8px; }
+.seg button[aria-pressed="true"] { background: var(--surface); color: var(--ink); }
+@media (min-width: 560px) {
+  .sync { flex-basis: auto; order: 0; margin-left: auto; }
+  .tools { margin-left: 0; }
+}
 
 /* Pestañas (solo celular) */
 .tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; padding: 4px; background: var(--accent-soft); border-radius: 14px; }
@@ -118,13 +128,31 @@ button { cursor: pointer; }
 .daytitle { text-align: center; min-width: 0; }
 .daytitle h1 { font-family: var(--font-display); font-weight: 600; font-size: 1.75rem; line-height: 1.15; text-wrap: balance; }
 .daytitle p { color: var(--muted); font-size: 0.9375rem; }
-.today-row { display: flex; justify-content: center; margin-top: -10px; }
+.day-tools { display: flex; justify-content: center; flex-wrap: wrap; gap: 4px; margin-top: -12px; }
 
 .icon-btn { width: 36px; height: 36px; display: grid; place-items: center; border: 0; border-radius: 10px; background: transparent; color: var(--muted); flex: none; }
 .icon-btn:hover:not(:disabled) { background: var(--accent-soft); color: var(--ink); }
 .icon-btn:disabled { opacity: 0.3; cursor: default; }
-.icon-btn svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.icon-btn svg, .btn-quiet svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex: none; }
 .icon-btn.del:hover:not(:disabled) { color: var(--danger); }
+
+/* Calendario */
+.cal { border: 1.5px solid var(--line); border-radius: 16px; padding: 12px; display: flex; flex-direction: column; gap: 8px; }
+.cal-head { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 8px; }
+.cal-head strong { text-align: center; font-family: var(--font-display); font-weight: 600; font-size: 1.0625rem; }
+.cal-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 2px; }
+.cal-wd { text-align: center; font-size: 0.6875rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); padding: 4px 0; }
+.cal-day { position: relative; height: 42px; border: 0; border-radius: 12px; background: transparent; display: grid; place-items: center; padding: 0 0 6px; font-variant-numeric: tabular-nums; }
+.cal-day:hover { background: var(--accent-soft); }
+.cal-day.is-today { box-shadow: inset 0 0 0 1.5px var(--accent); font-weight: 600; }
+.cal-day.is-sel { background: var(--accent); color: var(--accent-ink); font-weight: 600; }
+.dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); flex: none; }
+.dot.all-done { background: transparent; box-shadow: inset 0 0 0 1.5px var(--muted); }
+.cal-day .dot { position: absolute; left: 50%; bottom: 5px; margin-left: -3px; }
+.cal-day.is-sel .dot { background: var(--accent-ink); }
+.cal-day.is-sel .dot.all-done { background: transparent; box-shadow: inset 0 0 0 1.5px var(--accent-ink); }
+.cal-legend { display: flex; justify-content: center; flex-wrap: wrap; gap: 4px 16px; font-size: 0.8125rem; color: var(--muted); }
+.cal-legend span { display: inline-flex; align-items: center; gap: 6px; }
 
 .progress { display: flex; align-items: center; gap: 14px; }
 .ring { width: 56px; height: 56px; flex: none; }
@@ -142,9 +170,10 @@ button { cursor: pointer; }
 .add input:focus { outline: none; border-color: var(--accent); }
 .btn { border: 0; border-radius: 14px; padding: 12px 18px; background: var(--accent); color: var(--accent-ink); font-weight: 600; flex: none; }
 .btn:disabled, .add input:disabled { opacity: 0.55; cursor: default; }
-.btn-quiet { border: 0; background: transparent; color: var(--accent); font-weight: 600; font-size: 0.875rem; padding: 6px 8px; border-radius: 8px; }
+.btn-quiet { border: 0; background: transparent; color: var(--accent); font-weight: 600; font-size: 0.875rem; padding: 6px 8px; border-radius: 8px; display: inline-flex; align-items: center; gap: 6px; }
 .btn-quiet:hover:not(:disabled) { background: var(--accent-soft); }
 .btn-quiet:disabled { opacity: 0.45; cursor: default; }
+.btn-quiet[aria-expanded="true"] { background: var(--accent-soft); }
 
 .carry { background: var(--t-butter); color: var(--ink); border-radius: 14px; padding: 12px 14px; display: flex; align-items: center; justify-content: space-between; gap: 6px 12px; flex-wrap: wrap; font-size: 0.9375rem; }
 .carry .btn-quiet { color: var(--k-butter); }
@@ -199,36 +228,70 @@ button { cursor: pointer; }
 
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
 </style>
+<script>
+/* Tema e idioma guardados: se aplican antes de pintar para que no parpadee. */
+(function () {
+  try {
+    var r = document.documentElement;
+    var t = localStorage.getItem('diaclaro:theme');
+    if (t === 'light' || t === 'dark') r.setAttribute('data-theme', t);
+    var l = localStorage.getItem('diaclaro:lang');
+    if (l === 'en' || l === 'es') r.lang = l;
+  } catch (e) {}
+})();
+</script>
 </head>
 <body>
 <div class="page" id="page" data-view="tareas">
   <header class="top">
-    <div class="brand"><span class="brand-mark" aria-hidden="true"></span>Día Claro</div>
+    <div class="brand"><span class="brand-mark" aria-hidden="true"></span>To do doo</div>
     <p class="sync" id="sync" role="status">Cargando…</p>
+    <div class="tools">
+      <div class="seg" id="lang-seg" role="group" aria-label="Idioma" data-i18n-aria="langLabel">
+        <button type="button" data-lang="es" lang="es" aria-label="Español" aria-pressed="true">ES</button>
+        <button type="button" data-lang="en" lang="en" aria-label="English" aria-pressed="false">EN</button>
+      </div>
+      <button class="icon-btn" id="theme-btn" type="button" aria-label="Cambiar a tema oscuro"></button>
+    </div>
   </header>
 
-  <nav class="tabs" aria-label="Secciones">
-    <a href="#tareas" id="tab-tareas" aria-current="page">Tareas</a>
-    <a href="#inspiracion" id="tab-inspiracion">Inspiración</a>
+  <nav class="tabs" aria-label="Secciones" data-i18n-aria="sections">
+    <a href="#tareas" id="tab-tareas" aria-current="page" data-i18n="tabTasks">Tareas</a>
+    <a href="#inspiracion" id="tab-inspiracion" data-i18n="tabIdeas">Inspiración</a>
   </nav>
 
   <main class="cols">
     <section class="sheet" id="panel-tareas" aria-labelledby="day-title">
       <div class="daybar">
-        <button class="icon-btn" id="prev" type="button" aria-label="Día anterior"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button>
+        <button class="icon-btn" id="prev" type="button" aria-label="Día anterior" data-i18n-aria="prevDay"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button>
         <div class="daytitle">
           <h1 id="day-title">Hoy</h1>
           <p id="day-date"></p>
         </div>
-        <button class="icon-btn" id="next" type="button" aria-label="Día siguiente"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button>
+        <button class="icon-btn" id="next" type="button" aria-label="Día siguiente" data-i18n-aria="nextDay"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button>
       </div>
-      <div class="today-row" id="today-row" hidden>
-        <button class="btn-quiet" id="go-today" type="button">Volver a hoy</button>
+      <div class="day-tools">
+        <button class="btn-quiet" id="cal-btn" type="button" aria-expanded="false" aria-controls="cal"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="3"/><path d="M4 10h16M8 3v4M16 3v4"/></svg><span data-i18n="calendar">Calendario</span></button>
+        <button class="btn-quiet" id="go-today" type="button" data-i18n="goToday" hidden>Volver a hoy</button>
+      </div>
+
+      <div class="cal" id="cal" hidden>
+        <div class="cal-head">
+          <button class="icon-btn" id="cal-prev" type="button" aria-label="Mes anterior" data-i18n-aria="prevMonth"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button>
+          <strong id="cal-label" aria-live="polite"></strong>
+          <button class="icon-btn" id="cal-next" type="button" aria-label="Mes siguiente" data-i18n-aria="nextMonth"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button>
+        </div>
+        <div class="cal-grid" id="cal-wd" aria-hidden="true"></div>
+        <div class="cal-grid" id="cal-days"></div>
+        <p class="cal-legend">
+          <span><i class="dot" aria-hidden="true"></i><span data-i18n="legendTodo">Con pendientes</span></span>
+          <span><i class="dot all-done" aria-hidden="true"></i><span data-i18n="legendDone">Todo hecho</span></span>
+        </p>
       </div>
 
       <div class="progress">
         <svg class="ring" viewBox="0 0 56 56" role="img" aria-labelledby="ring-label">
-          <title id="ring-label">Avance del día</title>
+          <title id="ring-label" data-i18n="ring">Avance del día</title>
           <circle class="track" cx="28" cy="28" r="24"/>
           <circle class="arc" id="ring-arc" cx="28" cy="28" r="24" stroke-dasharray="150.8" stroke-dashoffset="150.8"/>
           <text id="ring-num" x="28" y="32.5" text-anchor="middle">–</text>
@@ -240,26 +303,26 @@ button { cursor: pointer; }
       </div>
 
       <form class="add" id="add-form" autocomplete="off">
-        <input id="nueva-tarea" type="text" maxlength="200" placeholder="Anota una tarea…" aria-label="Nueva tarea" enterkeyhint="done" disabled>
-        <button class="btn" id="add-btn" type="submit" disabled>Añadir</button>
+        <input id="nueva-tarea" type="text" maxlength="200" placeholder="Anota una tarea…" aria-label="Nueva tarea" data-i18n-aria="newTask" enterkeyhint="done" disabled>
+        <button class="btn" id="add-btn" type="submit" data-i18n="add" disabled>Añadir</button>
       </form>
 
       <div class="carry" id="carry" hidden>
         <span id="carry-text"></span>
         <div class="carry-actions">
           <button class="btn-quiet" id="carry-yes" type="button">Traerlas a hoy</button>
-          <button class="btn-quiet" id="carry-no" type="button">Ahora no</button>
+          <button class="btn-quiet" id="carry-no" type="button" data-i18n="carryNo">Ahora no</button>
         </div>
       </div>
 
       <div id="lists" style="display:contents">
         <div class="group">
-          <h2>Por hacer <span class="count" id="todo-count"></span></h2>
+          <h2><span data-i18n="todo">Por hacer</span> <span class="count" id="todo-count"></span></h2>
           <ul id="todo-list"></ul>
           <p class="hint" id="todo-empty" hidden></p>
         </div>
         <div class="group" id="done-group" hidden>
-          <h2>Hechas <span class="count" id="done-count"></span></h2>
+          <h2><span data-i18n="done">Hechas</span> <span class="count" id="done-count"></span></h2>
           <ul id="done-list"></ul>
         </div>
       </div>
@@ -267,8 +330,8 @@ button { cursor: pointer; }
 
     <section class="notes" id="panel-inspiracion" aria-labelledby="notes-title">
       <div class="notes-head">
-        <h2 id="notes-title">Inspiración</h2>
-        <p>Una selección nueva cada día. Si algo te sirve, pásalo a tu lista.</p>
+        <h2 id="notes-title" data-i18n="tabIdeas">Inspiración</h2>
+        <p data-i18n="notesSub">Una selección nueva cada día. Si algo te sirve, pásalo a tu lista.</p>
       </div>
       <div id="notes-list" style="display:contents"></div>
     </section>
@@ -281,92 +344,245 @@ button { cursor: pointer; }
 (function () {
   'use strict';
 
+  /* ---------- Textos de la interfaz (español e inglés) ---------- */
+  const T = {
+    es: {
+      langLabel: 'Idioma', toLight: 'Cambiar a tema claro', toDark: 'Cambiar a tema oscuro',
+      sections: 'Secciones', tabTasks: 'Tareas', tabIdeas: 'Inspiración',
+      prevDay: 'Día anterior', nextDay: 'Día siguiente', today: 'Hoy', yesterday: 'Ayer', tomorrow: 'Mañana',
+      goToday: 'Volver a hoy', calendar: 'Calendario', prevMonth: 'Mes anterior', nextMonth: 'Mes siguiente',
+      legendTodo: 'Con pendientes', legendDone: 'Todo hecho',
+      calDay: (date, todo, done) => date + (todo ? ', ' + todo + ' por hacer' : '') + (done ? ', ' + done + (done === 1 ? ' hecha' : ' hechas') : ''),
+      ring: 'Avance del día', loadingTasks: 'Cargando tus tareas…',
+      openFail: 'No pudimos abrir tus tareas', openFailSub: 'Vuelve a abrir la página en unos minutos.',
+      none: 'Nada anotado todavía', noneSub: 'Escribe abajo lo primero que quieras hacer.',
+      doneOf: (d, n) => d + ' de ' + n + (n === 1 ? ' tarea hecha' : ' tareas hechas'),
+      allDone: 'Día completo. Buen trabajo.', left: (n) => (n === 1 ? 'Te falta 1.' : 'Te faltan ' + n + '.'),
+      placeholder: 'Anota una tarea…', placeholderDay: 'Anota una tarea para este día…', newTask: 'Nueva tarea', add: 'Añadir',
+      todo: 'Por hacer', done: 'Hechas',
+      emptyFirst: 'Aquí aparecerán tus tareas. Márcalas a medida que las termines.', emptyRest: 'No queda nada pendiente.',
+      carry: (n) => (n === 1 ? 'Ayer quedó 1 tarea sin hacer.' : 'Ayer quedaron ' + n + ' tareas sin hacer.'),
+      carryYes: (n) => (n === 1 ? 'Traerla a hoy' : 'Traerlas a hoy'), carryNo: 'Ahora no',
+      carried: (n) => (n === 1 ? 'Se pasó 1 tarea de ayer a hoy.' : 'Se pasaron ' + n + ' tareas de ayer a hoy.'),
+      up: 'Subir', down: 'Bajar', del: 'Eliminar', doneAt: 'Hora en que la marcaste',
+      removed: 'Tarea eliminada.', undo: 'Deshacer',
+      stLoading: 'Cargando…', stNoAccess: 'Sin acceso a tus tareas guardadas', stError: 'No se pudo guardar el último cambio',
+      stSaving: 'Guardando…', stOffline: 'Sin conexión: puede estar desactualizado', stSlow: 'Tarda en cargar, seguimos intentando',
+      stCloud: 'Guardado en tu cuenta', stLocal: 'Guardado solo en este navegador',
+      notesSub: 'Una selección nueva cada día. Si algo te sirve, pásalo a tu lista.',
+      tipOfDay: 'Consejo del día', another: 'Ver otro', addToTasks: 'Añadir a mis tareas',
+      addedTo: (rel, date) => 'Añadida a tus tareas ' + (rel ? 'de ' + rel.toLowerCase() : 'del ' + date) + '.',
+      notReady: 'Tus tareas aún no están listas. Inténtalo en un momento.'
+    },
+    en: {
+      langLabel: 'Language', toLight: 'Switch to light theme', toDark: 'Switch to dark theme',
+      sections: 'Sections', tabTasks: 'Tasks', tabIdeas: 'Inspiration',
+      prevDay: 'Previous day', nextDay: 'Next day', today: 'Today', yesterday: 'Yesterday', tomorrow: 'Tomorrow',
+      goToday: 'Back to today', calendar: 'Calendar', prevMonth: 'Previous month', nextMonth: 'Next month',
+      legendTodo: 'Tasks pending', legendDone: 'All done',
+      calDay: (date, todo, done) => date + (todo ? ', ' + todo + ' to do' : '') + (done ? ', ' + done + ' done' : ''),
+      ring: 'Progress for the day', loadingTasks: 'Loading your tasks…',
+      openFail: 'We couldn’t open your tasks', openFailSub: 'Open the page again in a few minutes.',
+      none: 'Nothing written down yet', noneSub: 'Type the first thing you want to do below.',
+      doneOf: (d, n) => d + ' of ' + n + (n === 1 ? ' task done' : ' tasks done'),
+      allDone: 'Day complete. Nice work.', left: (n) => n + ' to go.',
+      placeholder: 'Write down a task…', placeholderDay: 'Write down a task for this day…', newTask: 'New task', add: 'Add',
+      todo: 'To do', done: 'Done',
+      emptyFirst: 'Your tasks will show up here. Check them off as you finish them.', emptyRest: 'Nothing left to do.',
+      carry: (n) => (n === 1 ? '1 task from yesterday is still open.' : n + ' tasks from yesterday are still open.'),
+      carryYes: (n) => (n === 1 ? 'Move it to today' : 'Move them to today'), carryNo: 'Not now',
+      carried: (n) => (n === 1 ? 'Moved 1 task from yesterday to today.' : 'Moved ' + n + ' tasks from yesterday to today.'),
+      up: 'Move up', down: 'Move down', del: 'Delete', doneAt: 'Time you checked it off',
+      removed: 'Task deleted.', undo: 'Undo',
+      stLoading: 'Loading…', stNoAccess: 'Can’t reach your saved tasks', stError: 'Couldn’t save the last change',
+      stSaving: 'Saving…', stOffline: 'Offline: this may be out of date', stSlow: 'Slow to load, still trying',
+      stCloud: 'Saved to your account', stLocal: 'Saved only in this browser',
+      notesSub: 'A fresh selection every day. If something helps, move it to your list.',
+      tipOfDay: 'Tip of the day', another: 'Show another', addToTasks: 'Add to my tasks',
+      addedTo: (rel, date) => 'Added to your tasks for ' + (rel ? rel.toLowerCase() : date) + '.',
+      notReady: 'Your tasks aren’t ready yet. Try again in a moment.'
+    }
+  };
+
   /* ---------- Contenido de la columna de inspiración ---------- */
-  const CONSEJOS = [
-    'Elige una sola tarea importante y empieza por ella antes de abrir el correo o el chat.',
-    'Deja lista esta noche la primera tarea de mañana. Empezar cuesta menos cuando ya sabes por dónde.',
-    'Si algo toma menos de dos minutos, hazlo ahora y sácalo de la lista.',
-    'Reserva un bloque de 45 minutos sin notificaciones para lo que más te pesa.',
-    'Revisa tu lista al mediodía. Tacha, mueve o borra lo que ya no tiene sentido hoy.',
-    'Anota las ideas sueltas apenas aparezcan. La cabeza es para pensar, no para guardar pendientes.',
-    'Termina el día escribiendo tres cosas que sí avanzaste.',
-    'Di que no a una cosa hoy para poder decir que sí a lo que importa.',
-    'Divide la tarea grande en un primer paso que puedas terminar en 15 minutos.',
-    'Agrupa los recados pequeños y hazlos de una sola vez.',
-    'Ponle hora de cierre a tu jornada y respétala como si fuera una reunión.',
-    'Empieza por lo difícil mientras tienes la energía de la mañana.',
-    'Una lista corta que se cumple vale más que una larga que se arrastra. Hoy apunta a cinco tareas.',
-    'Antes de aceptar algo nuevo, mira qué tienes ya anotado para esta semana.'
-  ];
+  const CONSEJOS = {
+    es: [
+      'Elige una sola tarea importante y empieza por ella antes de abrir el correo o el chat.',
+      'Deja lista esta noche la primera tarea de mañana. Empezar cuesta menos cuando ya sabes por dónde.',
+      'Si algo toma menos de dos minutos, hazlo ahora y sácalo de la lista.',
+      'Reserva un bloque de 45 minutos sin notificaciones para lo que más te pesa.',
+      'Revisa tu lista al mediodía. Tacha, mueve o borra lo que ya no tiene sentido hoy.',
+      'Anota las ideas sueltas apenas aparezcan. La cabeza es para pensar, no para guardar pendientes.',
+      'Termina el día escribiendo tres cosas que sí avanzaste.',
+      'Di que no a una cosa hoy para poder decir que sí a lo que importa.',
+      'Divide la tarea grande en un primer paso que puedas terminar en 15 minutos.',
+      'Agrupa los recados pequeños y hazlos de una sola vez.',
+      'Ponle hora de cierre a tu jornada y respétala como si fuera una reunión.',
+      'Empieza por lo difícil mientras tienes la energía de la mañana.',
+      'Una lista corta que se cumple vale más que una larga que se arrastra. Hoy apunta a cinco tareas.',
+      'Antes de aceptar algo nuevo, mira qué tienes ya anotado para esta semana.'
+    ],
+    en: [
+      'Pick one important task and start with it before you open email or chat.',
+      'Set up tomorrow’s first task tonight. Starting is easier when you already know where to begin.',
+      'If something takes less than two minutes, do it now and get it off the list.',
+      'Block out 45 minutes with no notifications for the thing that weighs on you most.',
+      'Check your list at midday. Cross off, move or delete what no longer makes sense today.',
+      'Write down stray ideas as soon as they show up. Your head is for thinking, not for storing to-dos.',
+      'End the day by writing down three things you did move forward.',
+      'Say no to one thing today so you can say yes to what matters.',
+      'Break the big task into a first step you can finish in 15 minutes.',
+      'Group the small errands and do them in one go.',
+      'Give your workday a closing time and keep it as if it were a meeting.',
+      'Start with the hard part while you still have your morning energy.',
+      'A short list you finish beats a long one you drag along. Aim for five tasks today.',
+      'Before you take on something new, look at what you already have down for this week.'
+    ]
+  };
   const CATS = [
-    { id: 'habitos', label: 'Hábito saludable', tint: 'sage', add: true, items: [
-      'Toma un vaso de agua al despertar, antes del café.',
-      'Camina 10 minutos después de almorzar.',
-      'Cada 20 minutos de pantalla, mira algo a 6 metros durante 20 segundos.',
-      'Levántate y estírate cada hora que pases en la silla.',
-      'Apaga las pantallas 30 minutos antes de dormir.',
-      'Suma una fruta o una verdura a la comida que menos tenga.',
-      'Acuéstate y levántate a la misma hora, también el fin de semana.',
-      'Respira hondo cinco veces antes de pasar de una tarea a otra.',
-      'Sal a tomar luz natural durante la mañana, aunque sean cinco minutos.',
-      'Sube por las escaleras cuando sean tres pisos o menos.',
-      'Come sin el celular en la mesa al menos una vez al día.'
-    ] },
-    { id: 'tips', label: 'Tip rápido', tint: 'sky', add: true, items: [
-      'Deja el celular en otra habitación mientras haces la tarea más importante.',
-      'Usa un temporizador: 25 minutos de trabajo, 5 de pausa.',
-      'Escribe cada tarea empezando con un verbo: llamar, enviar, revisar.',
-      'Deja a la vista solo lo que vas a usar en la próxima hora.',
-      'Responde mensajes en dos o tres momentos fijos del día, no a cada rato.',
-      'Cuando te trabes, escribe en una línea cuál es el siguiente paso concreto.',
-      'Prepara la ropa y el bolso la noche anterior.',
-      'Lleva una lista aparte para lo que depende de otra persona.',
-      'Cierra las pestañas que no usaste en la última hora.',
-      'Ponle fecha a lo que no harás hoy, o bórralo.'
-    ] },
-    { id: 'motivacion', label: 'Motivación', tint: 'peach', add: false, items: [
-      'No tienes que hacerlo todo hoy. Tienes que hacer lo de hoy.',
-      'Lo que avanzas un poco cada día termina siendo mucho.',
-      'Empezar mal sigue siendo empezar.',
-      'Ya resolviste días más difíciles que este.',
-      'El progreso pequeño también cuenta. Táchalo con gusto.',
-      'Tu ritmo es válido aunque no se parezca al de nadie más.',
-      'Descansar también es parte del trabajo bien hecho.',
-      'La constancia le gana a la perfección.',
-      'Cada tarea tachada es una promesa que te cumpliste.',
-      'Si hoy solo alcanzó para una cosa, que sea una cosa bien hecha.'
-    ] },
-    { id: 'mejora', label: 'Para mejorar tus hábitos', tint: 'lilac', add: true, items: [
-      'Pega el hábito nuevo a uno que ya tienes: después de cepillarte los dientes, lee una página.',
-      'Empieza tan pequeño que no tenga sentido saltárselo: dos minutos, una flexión, un párrafo.',
-      'Deja a la vista lo que quieres hacer y guarda lejos lo que quieres evitar.',
-      'Marca en un calendario cada día cumplido. Ver la cadena ayuda a no romperla.',
-      'Si fallas un día, vuelve al siguiente. La regla es no fallar dos veces seguidas.',
-      'Cambia un hábito a la vez. Dale tres o cuatro semanas antes de sumar otro.',
-      'Define cuándo y dónde: «a las 7:00, en la cocina», no «en algún momento».',
-      'Cuéntale tu meta a alguien que te pregunte cómo vas.',
-      'Date un pequeño gusto justo después de cumplir, para asociar el hábito con algo agradable.',
-      'Cada domingo, revisa qué hábito te costó y hazlo más fácil, no más estricto.'
-    ] },
-    { id: 'proyectos', label: 'Idea de proyecto', tint: 'rose', add: true, items: [
-      'Arma un recetario familiar con las recetas que solo se saben de memoria.',
-      'Digitaliza y ordena las fotos de un año entero en un solo álbum.',
-      'Aprende 20 frases útiles en un idioma nuevo y úsalas en una conversación.',
-      'Planta tres hierbas de cocina en macetas: albahaca, perejil y hierbabuena.',
-      'Escribe una carta a tu yo de dentro de un año y guárdala con fecha.',
-      'Haz un presupuesto simple del mes en una hoja de cálculo.',
-      'Ordena un cajón o un estante por semana durante un mes.',
-      'Graba a una persona mayor de tu familia contando su historia.',
-      'Lee un libro corto por mes y anota una idea de cada uno.',
-      'Diseña una ruta de caminata por tu barrio y recórrela cada domingo.',
-      'Crea una lista de música para cada momento del día: enfocarte, cocinar, descansar.',
-      'Aprende a hacer pan en casa y perfecciona una sola receta.',
-      'Empieza un cuaderno de ideas de negocio: una por día durante 30 días.'
-    ] }
+    { id: 'habitos', label: { es: 'Hábito saludable', en: 'Healthy habit' }, tint: 'sage', add: true, items: {
+      es: [
+        'Toma un vaso de agua al despertar, antes del café.',
+        'Camina 10 minutos después de almorzar.',
+        'Cada 20 minutos de pantalla, mira algo a 6 metros durante 20 segundos.',
+        'Levántate y estírate cada hora que pases en la silla.',
+        'Apaga las pantallas 30 minutos antes de dormir.',
+        'Suma una fruta o una verdura a la comida que menos tenga.',
+        'Acuéstate y levántate a la misma hora, también el fin de semana.',
+        'Respira hondo cinco veces antes de pasar de una tarea a otra.',
+        'Sal a tomar luz natural durante la mañana, aunque sean cinco minutos.',
+        'Sube por las escaleras cuando sean tres pisos o menos.',
+        'Come sin el celular en la mesa al menos una vez al día.'
+      ],
+      en: [
+        'Drink a glass of water when you wake up, before coffee.',
+        'Walk for 10 minutes after lunch.',
+        'Every 20 minutes of screen time, look at something 20 feet away for 20 seconds.',
+        'Stand up and stretch every hour you spend sitting.',
+        'Turn off screens 30 minutes before bed.',
+        'Add a fruit or a vegetable to the meal that has the least.',
+        'Go to bed and get up at the same time, weekends included.',
+        'Take five deep breaths before moving from one task to the next.',
+        'Get some natural light in the morning, even if it’s only five minutes.',
+        'Take the stairs when it’s three floors or fewer.',
+        'Eat without your phone on the table at least once a day.'
+      ]
+    } },
+    { id: 'tips', label: { es: 'Tip rápido', en: 'Quick tip' }, tint: 'sky', add: true, items: {
+      es: [
+        'Deja el celular en otra habitación mientras haces la tarea más importante.',
+        'Usa un temporizador: 25 minutos de trabajo, 5 de pausa.',
+        'Escribe cada tarea empezando con un verbo: llamar, enviar, revisar.',
+        'Deja a la vista solo lo que vas a usar en la próxima hora.',
+        'Responde mensajes en dos o tres momentos fijos del día, no a cada rato.',
+        'Cuando te trabes, escribe en una línea cuál es el siguiente paso concreto.',
+        'Prepara la ropa y el bolso la noche anterior.',
+        'Lleva una lista aparte para lo que depende de otra persona.',
+        'Cierra las pestañas que no usaste en la última hora.',
+        'Ponle fecha a lo que no harás hoy, o bórralo.'
+      ],
+      en: [
+        'Leave your phone in another room while you do your most important task.',
+        'Use a timer: 25 minutes of work, 5 of rest.',
+        'Start every task with a verb: call, send, review.',
+        'Keep in sight only what you’ll use in the next hour.',
+        'Answer messages at two or three set times a day, not all the time.',
+        'When you get stuck, write the next concrete step in one line.',
+        'Lay out your clothes and bag the night before.',
+        'Keep a separate list for things that depend on someone else.',
+        'Close the tabs you haven’t used in the last hour.',
+        'Put a date on what you won’t do today, or delete it.'
+      ]
+    } },
+    { id: 'motivacion', label: { es: 'Motivación', en: 'Motivation' }, tint: 'peach', add: false, items: {
+      es: [
+        'No tienes que hacerlo todo hoy. Tienes que hacer lo de hoy.',
+        'Lo que avanzas un poco cada día termina siendo mucho.',
+        'Empezar mal sigue siendo empezar.',
+        'Ya resolviste días más difíciles que este.',
+        'El progreso pequeño también cuenta. Táchalo con gusto.',
+        'Tu ritmo es válido aunque no se parezca al de nadie más.',
+        'Descansar también es parte del trabajo bien hecho.',
+        'La constancia le gana a la perfección.',
+        'Cada tarea tachada es una promesa que te cumpliste.',
+        'Si hoy solo alcanzó para una cosa, que sea una cosa bien hecha.'
+      ],
+      en: [
+        'You don’t have to do everything today. You have to do today’s part.',
+        'What you move forward a little each day ends up being a lot.',
+        'A rough start is still a start.',
+        'You’ve already got through harder days than this one.',
+        'Small progress counts too. Cross it off with pleasure.',
+        'Your pace is valid even if it looks like nobody else’s.',
+        'Rest is part of work done well.',
+        'Consistency beats perfection.',
+        'Every task you cross off is a promise you kept to yourself.',
+        'If today only had room for one thing, make it one thing done well.'
+      ]
+    } },
+    { id: 'mejora', label: { es: 'Para mejorar tus hábitos', en: 'To improve your habits' }, tint: 'lilac', add: true, items: {
+      es: [
+        'Pega el hábito nuevo a uno que ya tienes: después de cepillarte los dientes, lee una página.',
+        'Empieza tan pequeño que no tenga sentido saltárselo: dos minutos, una flexión, un párrafo.',
+        'Deja a la vista lo que quieres hacer y guarda lejos lo que quieres evitar.',
+        'Marca en un calendario cada día cumplido. Ver la cadena ayuda a no romperla.',
+        'Si fallas un día, vuelve al siguiente. La regla es no fallar dos veces seguidas.',
+        'Cambia un hábito a la vez. Dale tres o cuatro semanas antes de sumar otro.',
+        'Define cuándo y dónde: «a las 7:00, en la cocina», no «en algún momento».',
+        'Cuéntale tu meta a alguien que te pregunte cómo vas.',
+        'Date un pequeño gusto justo después de cumplir, para asociar el hábito con algo agradable.',
+        'Cada domingo, revisa qué hábito te costó y hazlo más fácil, no más estricto.'
+      ],
+      en: [
+        'Attach the new habit to one you already have: after brushing your teeth, read one page.',
+        'Start so small that skipping it makes no sense: two minutes, one push-up, one paragraph.',
+        'Keep what you want to do in sight and put what you want to avoid out of reach.',
+        'Mark every day you follow through on a calendar. Seeing the chain helps you not break it.',
+        'If you miss a day, come back the next. The rule is never miss twice in a row.',
+        'Change one habit at a time. Give it three or four weeks before adding another.',
+        'Decide when and where: “7:00, in the kitchen”, not “at some point”.',
+        'Tell your goal to someone who will ask how it’s going.',
+        'Give yourself a small treat right after you follow through, so the habit feels good.',
+        'Every Sunday, look at which habit was hard and make it easier, not stricter.'
+      ]
+    } },
+    { id: 'proyectos', label: { es: 'Idea de proyecto', en: 'Project idea' }, tint: 'rose', add: true, items: {
+      es: [
+        'Arma un recetario familiar con las recetas que solo se saben de memoria.',
+        'Digitaliza y ordena las fotos de un año entero en un solo álbum.',
+        'Aprende 20 frases útiles en un idioma nuevo y úsalas en una conversación.',
+        'Planta tres hierbas de cocina en macetas: albahaca, perejil y hierbabuena.',
+        'Escribe una carta a tu yo de dentro de un año y guárdala con fecha.',
+        'Haz un presupuesto simple del mes en una hoja de cálculo.',
+        'Ordena un cajón o un estante por semana durante un mes.',
+        'Graba a una persona mayor de tu familia contando su historia.',
+        'Lee un libro corto por mes y anota una idea de cada uno.',
+        'Diseña una ruta de caminata por tu barrio y recórrela cada domingo.',
+        'Crea una lista de música para cada momento del día: enfocarte, cocinar, descansar.',
+        'Aprende a hacer pan en casa y perfecciona una sola receta.',
+        'Empieza un cuaderno de ideas de negocio: una por día durante 30 días.'
+      ],
+      en: [
+        'Put together a family cookbook with the recipes people only know by heart.',
+        'Digitize and sort a whole year of photos into a single album.',
+        'Learn 20 useful phrases in a new language and use them in a conversation.',
+        'Plant three kitchen herbs in pots: basil, parsley and mint.',
+        'Write a letter to yourself a year from now and put it away with the date on it.',
+        'Make a simple monthly budget in a spreadsheet.',
+        'Tidy one drawer or shelf a week for a month.',
+        'Record an older relative telling their story.',
+        'Read one short book a month and write down one idea from each.',
+        'Map out a walking route around your neighborhood and walk it every Sunday.',
+        'Make a playlist for each part of the day: focusing, cooking, resting.',
+        'Learn to bake bread at home and perfect a single recipe.',
+        'Start a notebook of business ideas: one a day for 30 days.'
+      ]
+    } }
   ];
 
   /* ---------- Utilidades ---------- */
   const $ = (id) => document.getElementById(id);
+  const root = document.documentElement;
   const pad = (n) => String(n).padStart(2, '0');
   const keyOf = (d) => d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate());
   const fromKey = (k) => { const p = k.split('-').map(Number); return new Date(p[0], p[1] - 1, p[2]); };
@@ -378,8 +594,26 @@ button { cursor: pointer; }
   const wait = (ms) => new Promise((r) => setTimeout(r, ms));
   const cap = (s) => s.charAt(0).toUpperCase() + s.slice(1);
   const seed = (str) => { let h = 2166136261; for (let i = 0; i < str.length; i++) { h ^= str.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; };
-  const fmtWeekday = new Intl.DateTimeFormat('es', { weekday: 'long' });
-  const fmtDate = new Intl.DateTimeFormat('es', { weekday: 'long', day: 'numeric', month: 'long' });
+  const prefGet = (k) => { try { return localStorage.getItem('diaclaro:' + k); } catch (e) { return null; } };
+  const prefSet = (k, v) => { try { localStorage.setItem('diaclaro:' + k, v); } catch (e) { /* sin almacenamiento: vale solo para esta visita */ } };
+
+  /* ---------- Idioma ---------- */
+  let lang = prefGet('lang') === 'en' ? 'en' : 'es';
+  let S = T[lang];
+  const fmtCache = {};
+  function fmt(name, opts) {
+    const k = lang + ':' + name;
+    return fmtCache[k] || (fmtCache[k] = new Intl.DateTimeFormat(lang, opts));
+  }
+  const fmtWeekday = (d) => fmt('wd', { weekday: 'long' }).format(d);
+  const fmtWdShort = (d) => fmt('ws', { weekday: 'short' }).format(d).replace('.', '');
+  const fmtMonth = (d) => fmt('m', { month: 'long', year: 'numeric' }).format(d);
+  function fmtDate(d) {
+    const sameYear = d.getFullYear() === new Date().getFullYear();
+    return sameYear
+      ? fmt('d', { weekday: 'long', day: 'numeric', month: 'long' }).format(d)
+      : fmt('dy', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }).format(d);
+  }
 
   function clean(list) {
     if (!Array.isArray(list)) return [];
@@ -463,6 +697,7 @@ button { cursor: pointer; }
     if (unsub) { unsub(); unsub = null; }
     clearTimeout(loadTimer);
     state.day = day; state.tasks = []; state.loaded = false; state.failed = false; state.slow = false;
+    if (cal.open) showMonthOf(day);
     if (store.mode === 'local') {
       state.tasks = clean(localRead(day));
       state.loaded = true;
@@ -487,6 +722,100 @@ button { cursor: pointer; }
     }
     render();
     checkYesterday();
+  }
+
+  /* ---------- Calendario: qué días tienen tareas ---------- */
+  const cal = { open: false, y: 0, m: 0 };
+  const marks = new Map();
+  let marksSeq = 0;
+  function countOf(tasks) {
+    let todo = 0, done = 0;
+    tasks.forEach((t) => { if (t.done) done++; else todo++; });
+    return { todo: todo, done: done };
+  }
+  function mark(day, tasks) { if (tasks.length) marks.set(day, countOf(tasks)); else marks.delete(day); }
+  function markCurrent() {
+    if (pending) mark(pending.day, pending.tasks);
+    if (canEdit()) mark(state.day, state.tasks);
+  }
+  async function loadMarks() {
+    const seq = ++marksSeq;
+    const next = new Map();
+    try {
+      if (store.mode === 'local') {
+        for (let i = 0; i < localStorage.length; i++) {
+          const m = /^diaclaro:(\d{4}-\d{2}-\d{2})$/.exec(localStorage.key(i) || '');
+          if (!m) continue;
+          const tasks = clean(localRead(m[1]));
+          if (tasks.length) next.set(m[1], countOf(tasks));
+        }
+      } else if (store.mode === 'cloud') {
+        await saving;
+        const snap = await store.db.collection('data/users/' + store.uid).limit(1000).get();
+        snap.docs.forEach((doc) => {
+          const m = /^dia-(\d{4}-\d{2}-\d{2})$/.exec(doc.id || '');
+          const data = m && doc.exists ? doc.data() : null;
+          const tasks = data ? clean(data.tasks) : [];
+          if (tasks.length) next.set(m[1], countOf(tasks));
+        });
+      } else return;
+    } catch (e) { return; }
+    if (seq !== marksSeq) return;
+    marks.clear();
+    next.forEach((v, k) => marks.set(k, v));
+    markCurrent();
+    renderCal();
+  }
+  function showMonthOf(day) { const d = fromKey(day); cal.y = d.getFullYear(); cal.m = d.getMonth(); }
+  function setCalOpen(open) {
+    cal.open = open;
+    els.cal.hidden = !open;
+    els.calBtn.setAttribute('aria-expanded', String(open));
+    if (open) { showMonthOf(state.day); markCurrent(); renderCal(); loadMarks(); }
+  }
+  function stepMonth(n) {
+    const d = new Date(cal.y, cal.m + n, 1);
+    cal.y = d.getFullYear(); cal.m = d.getMonth();
+    renderCal();
+  }
+  function renderCal() {
+    if (!cal.open) return;
+    const weekStart = lang === 'es' ? 1 : 0;
+    els.calLabel.textContent = cap(fmtMonth(new Date(cal.y, cal.m, 1)));
+    const heads = [];
+    for (let i = 0; i < 7; i++) {
+      const s = document.createElement('span');
+      s.className = 'cal-wd';
+      s.textContent = fmtWdShort(new Date(2024, 0, weekStart + i)); /* el 1 de enero de 2024 fue lunes */
+      heads.push(s);
+    }
+    els.calWd.replaceChildren.apply(els.calWd, heads);
+    const offset = (new Date(cal.y, cal.m, 1).getDay() - weekStart + 7) % 7;
+    const total = new Date(cal.y, cal.m + 1, 0).getDate();
+    const today = todayKey();
+    const cells = [];
+    for (let i = 0; i < offset; i++) cells.push(document.createElement('span'));
+    for (let n = 1; n <= total; n++) {
+      const date = new Date(cal.y, cal.m, n);
+      const day = keyOf(date);
+      const info = marks.get(day);
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'cal-day' + (day === today ? ' is-today' : '') + (day === state.day ? ' is-sel' : '');
+      b.dataset.day = day;
+      b.textContent = String(n);
+      b.setAttribute('aria-label', S.calDay(fmtDate(date), info ? info.todo : 0, info ? info.done : 0));
+      b.setAttribute('aria-pressed', String(day === state.day));
+      if (day === today) b.setAttribute('aria-current', 'date');
+      if (info) {
+        const dot = document.createElement('i');
+        dot.className = 'dot' + (info.todo ? '' : ' all-done');
+        dot.setAttribute('aria-hidden', 'true');
+        b.append(dot);
+      }
+      cells.push(b);
+    }
+    els.calDays.replaceChildren.apply(els.calDays, cells);
   }
 
   /* ---------- Pendientes de ayer ---------- */
@@ -514,11 +843,12 @@ button { cursor: pointer; }
     const from = carry.day;
     state.tasks = state.tasks.concat(pend.map((t) => ({ id: newId(), text: t.text, done: false, doneAt: null })));
     carry = null;
+    mark(from, rest);
     render();
     queueSave();
     flush();
     enqueue(from, rest);
-    toast(pend.length === 1 ? 'Se pasó 1 tarea de ayer a hoy.' : 'Se pasaron ' + pend.length + ' tareas de ayer a hoy.');
+    toast(S.carried(pend.length));
   }
 
   /* ---------- Acciones sobre tareas ---------- */
@@ -562,7 +892,7 @@ button { cursor: pointer; }
     const gone = state.tasks.splice(idx, 1)[0];
     const day = state.day;
     commit();
-    toast('Tarea eliminada.', 'Deshacer', () => {
+    toast(S.removed, S.undo, () => {
       if (state.day !== day || !canEdit() || state.tasks.some((x) => x.id === gone.id)) return;
       state.tasks.splice(Math.min(idx, state.tasks.length), 0, gone);
       commit();
@@ -571,7 +901,9 @@ button { cursor: pointer; }
 
   /* ---------- Pintado ---------- */
   const els = {
-    page: $('page'), sync: $('sync'), title: $('day-title'), date: $('day-date'), todayRow: $('today-row'),
+    page: $('page'), sync: $('sync'), title: $('day-title'), date: $('day-date'), goToday: $('go-today'),
+    themeBtn: $('theme-btn'), langSeg: $('lang-seg'),
+    cal: $('cal'), calBtn: $('cal-btn'), calLabel: $('cal-label'), calWd: $('cal-wd'), calDays: $('cal-days'),
     arc: $('ring-arc'), num: $('ring-num'), progMain: $('prog-main'), progSub: $('prog-sub'),
     input: $('nueva-tarea'), addBtn: $('add-btn'), carry: $('carry'), carryText: $('carry-text'),
     todo: $('todo-list'), todoCount: $('todo-count'), todoEmpty: $('todo-empty'),
@@ -582,15 +914,18 @@ button { cursor: pointer; }
   const ICON = {
     up: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 14l6-6 6 6"/></svg>',
     down: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 10l6 6 6-6"/></svg>',
-    del: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7l10 10M17 7L7 17"/></svg>'
+    del: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7l10 10M17 7L7 17"/></svg>',
+    sun: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M5.3 18.7l1.4-1.4M17.3 6.7l1.4-1.4"/></svg>',
+    moon: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.2A8 8 0 0 1 9.8 4 8 8 0 1 0 20 14.2z"/></svg>'
   };
-  function dayName(day) {
+  function relName(day) {
     const diff = dayDiff(day, todayKey());
-    if (diff === 0) return 'Hoy';
-    if (diff === -1) return 'Ayer';
-    if (diff === 1) return 'Mañana';
-    return cap(fmtWeekday.format(fromKey(day)));
+    if (diff === 0) return S.today;
+    if (diff === -1) return S.yesterday;
+    if (diff === 1) return S.tomorrow;
+    return '';
   }
+  const dayName = (day) => relName(day) || cap(fmtWeekday(fromKey(day)));
   function iconBtn(act, label, disabled) {
     const b = document.createElement('button');
     b.type = 'button'; b.className = 'icon-btn ' + act; b.dataset.act = act; b.disabled = !!disabled;
@@ -609,21 +944,22 @@ button { cursor: pointer; }
     li.append(chk, lab);
     if (t.done && t.doneAt) {
       const tm = document.createElement('span');
-      tm.className = 't-time'; tm.textContent = hhmm(t.doneAt); tm.title = 'Hora en que la marcaste';
+      tm.className = 't-time'; tm.textContent = hhmm(t.doneAt); tm.title = S.doneAt;
       li.append(tm);
     }
     const act = document.createElement('div');
     act.className = 't-actions';
-    if (!t.done) act.append(iconBtn('up', 'Subir: ' + t.text, i === 0), iconBtn('down', 'Bajar: ' + t.text, i === n - 1));
-    act.append(iconBtn('del', 'Eliminar: ' + t.text, false));
+    if (!t.done) act.append(iconBtn('up', S.up + ': ' + t.text, i === 0), iconBtn('down', S.down + ': ' + t.text, i === n - 1));
+    act.append(iconBtn('del', S.del + ': ' + t.text, false));
     li.append(act);
     return li;
   }
   function renderDay() {
     const isToday = state.day === todayKey();
     els.title.textContent = dayName(state.day);
-    els.date.textContent = fmtDate.format(fromKey(state.day));
-    els.todayRow.hidden = isToday;
+    els.date.textContent = fmtDate(fromKey(state.day));
+    els.goToday.hidden = isToday;
+    els.input.placeholder = isToday ? S.placeholder : S.placeholderDay;
   }
   function renderTasks() {
     const ready = canEdit();
@@ -636,23 +972,23 @@ button { cursor: pointer; }
     els.arc.style.strokeDashoffset = String(RING * (1 - ratio));
     els.num.textContent = total ? Math.round(ratio * 100) + '%' : '–';
     if (!state.loaded) {
-      els.progMain.textContent = 'Cargando tus tareas…';
+      els.progMain.textContent = S.loadingTasks;
       els.progSub.textContent = '';
     } else if (state.failed) {
-      els.progMain.textContent = 'No pudimos abrir tus tareas';
-      els.progSub.textContent = 'Vuelve a abrir la página en unos minutos.';
+      els.progMain.textContent = S.openFail;
+      els.progSub.textContent = S.openFailSub;
     } else if (total === 0) {
-      els.progMain.textContent = 'Nada anotado todavía';
-      els.progSub.textContent = 'Escribe abajo lo primero que quieras hacer.';
+      els.progMain.textContent = S.none;
+      els.progSub.textContent = S.noneSub;
     } else {
-      els.progMain.textContent = done.length + ' de ' + total + (total === 1 ? ' tarea hecha' : ' tareas hechas');
-      els.progSub.textContent = pend.length === 0 ? 'Día completo. Buen trabajo.' : (pend.length === 1 ? 'Te falta 1.' : 'Te faltan ' + pend.length + '.');
+      els.progMain.textContent = S.doneOf(done.length, total);
+      els.progSub.textContent = pend.length === 0 ? S.allDone : S.left(pend.length);
     }
     els.todo.replaceChildren.apply(els.todo, pend.map((t, i) => row(t, i, pend.length)));
     els.todoCount.textContent = pend.length ? String(pend.length) : '';
     const showEmpty = state.loaded && !state.failed && pend.length === 0;
     els.todoEmpty.hidden = !showEmpty;
-    if (showEmpty) els.todoEmpty.textContent = total === 0 ? 'Aquí aparecerán tus tareas. Márcalas a medida que las termines.' : 'No queda nada pendiente.';
+    if (showEmpty) els.todoEmpty.textContent = total === 0 ? S.emptyFirst : S.emptyRest;
     els.doneGroup.hidden = done.length === 0;
     els.done.replaceChildren.apply(els.done, done.map((t, i) => row(t, i, done.length)));
     els.doneCount.textContent = done.length ? String(done.length) : '';
@@ -662,20 +998,72 @@ button { cursor: pointer; }
     els.carry.hidden = !show;
     if (!show) return;
     const n = carry.tasks.filter((t) => !t.done).length;
-    els.carryText.textContent = n === 1 ? 'Ayer quedó 1 tarea sin hacer.' : 'Ayer quedaron ' + n + ' tareas sin hacer.';
-    $('carry-yes').textContent = n === 1 ? 'Traerla a hoy' : 'Traerlas a hoy';
+    els.carryText.textContent = S.carry(n);
+    $('carry-yes').textContent = S.carryYes(n);
   }
   function renderStatus() {
     let msg;
-    if (store.mode === 'boot') msg = 'Cargando…';
-    else if (state.failed) msg = 'Sin acceso a tus tareas guardadas';
-    else if (saveState === 'error') msg = 'No se pudo guardar el último cambio';
-    else if (saveState === 'saving') msg = 'Guardando…';
-    else if (state.slow) msg = state.loaded ? 'Sin conexión: puede estar desactualizado' : 'Tarda en cargar, seguimos intentando';
-    else msg = store.mode === 'cloud' ? 'Guardado en tu cuenta' : 'Guardado solo en este navegador';
+    if (store.mode === 'boot') msg = S.stLoading;
+    else if (state.failed) msg = S.stNoAccess;
+    else if (saveState === 'error') msg = S.stError;
+    else if (saveState === 'saving') msg = S.stSaving;
+    else if (state.slow) msg = state.loaded ? S.stOffline : S.stSlow;
+    else msg = store.mode === 'cloud' ? S.stCloud : S.stLocal;
     if (els.sync.textContent !== msg) els.sync.textContent = msg;
   }
-  function render() { renderDay(); renderTasks(); renderCarry(); renderStatus(); }
+  function render() {
+    renderDay(); renderTasks(); renderCarry(); renderStatus();
+    if (cal.open) { markCurrent(); renderCal(); }
+  }
+
+  /* ---------- Tema día / noche ---------- */
+  const mq = window.matchMedia ? window.matchMedia('(prefers-color-scheme: dark)') : null;
+  function themeNow() {
+    const a = root.getAttribute('data-theme');
+    if (a === 'dark' || a === 'light') return a;
+    return mq && mq.matches ? 'dark' : 'light';
+  }
+  function renderTheme() {
+    const dark = themeNow() === 'dark';
+    const label = dark ? S.toLight : S.toDark;
+    els.themeBtn.innerHTML = dark ? ICON.sun : ICON.moon;
+    els.themeBtn.setAttribute('aria-label', label);
+    els.themeBtn.title = label;
+    /* En la versión instalada en el celular, la barra del sistema sigue al tema elegido. */
+    const forced = root.getAttribute('data-theme');
+    if (forced === 'dark' || forced === 'light') {
+      const color = forced === 'dark' ? '#141B19' : '#F1F5F3';
+      document.querySelectorAll('meta[name="theme-color"]').forEach((m) => m.setAttribute('content', color));
+    }
+  }
+  els.themeBtn.addEventListener('click', () => {
+    const next = themeNow() === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    prefSet('theme', next);
+    renderTheme();
+  });
+  if (mq && mq.addEventListener) mq.addEventListener('change', renderTheme);
+  if (window.MutationObserver) new MutationObserver(renderTheme).observe(root, { attributes: true, attributeFilter: ['data-theme'] });
+
+  /* ---------- Cambio de idioma ---------- */
+  function applyLang() {
+    S = T[lang];
+    root.lang = lang;
+    document.querySelectorAll('[data-i18n]').forEach((el) => { el.textContent = S[el.dataset.i18n]; });
+    document.querySelectorAll('[data-i18n-aria]').forEach((el) => { el.setAttribute('aria-label', S[el.dataset.i18nAria]); });
+    els.langSeg.querySelectorAll('button').forEach((b) => { b.setAttribute('aria-pressed', String(b.dataset.lang === lang)); });
+    buildNotes();
+    renderTheme();
+    render();
+  }
+  els.langSeg.addEventListener('click', (e) => {
+    const b = e.target.closest ? e.target.closest('button[data-lang]') : null;
+    if (!b || b.dataset.lang === lang) return;
+    lang = b.dataset.lang;
+    prefSet('lang', lang);
+    clearTimeout(toastTimer); els.toast.hidden = true; toastFn = null;
+    applyLang();
+  });
 
   /* ---------- Aviso inferior ---------- */
   let toastTimer = null;
@@ -699,40 +1087,44 @@ button { cursor: pointer; }
   /* ---------- Inspiración ---------- */
   const offsets = {};
   function pick(cat) {
-    const base = seed(todayKey() + ':' + cat.id) % cat.items.length;
-    return cat.items[(base + (offsets[cat.id] || 0)) % cat.items.length];
+    const list = cat.items[lang];
+    const base = seed(todayKey() + ':' + cat.id) % list.length;
+    return list[(base + (offsets[cat.id] || 0)) % list.length];
   }
   function buildNotes() {
     const host = $('notes-list');
+    const tips = CONSEJOS[lang];
+    const cards = [];
     const lead = document.createElement('article');
     lead.className = 'note lead tint-butter';
-    const ll = document.createElement('span'); ll.className = 'label'; ll.textContent = 'Consejo del día';
-    const lp = document.createElement('p'); lp.textContent = CONSEJOS[seed(todayKey() + ':consejo') % CONSEJOS.length];
+    const ll = document.createElement('span'); ll.className = 'label'; ll.textContent = S.tipOfDay;
+    const lp = document.createElement('p'); lp.textContent = tips[seed(todayKey() + ':consejo') % tips.length];
     lead.append(ll, lp);
-    host.append(lead);
+    cards.push(lead);
     CATS.forEach((cat) => {
       const card = document.createElement('article');
       card.className = 'note tint-' + cat.tint;
-      const label = document.createElement('span'); label.className = 'label'; label.textContent = cat.label;
+      const label = document.createElement('span'); label.className = 'label'; label.textContent = cat.label[lang];
       const p = document.createElement('p'); p.id = 'note-' + cat.id; p.textContent = pick(cat);
       const actions = document.createElement('div'); actions.className = 'note-actions';
       const other = document.createElement('button');
-      other.type = 'button'; other.className = 'btn-quiet'; other.textContent = 'Ver otro';
+      other.type = 'button'; other.className = 'btn-quiet'; other.textContent = S.another;
       other.setAttribute('aria-controls', p.id);
       other.addEventListener('click', () => { offsets[cat.id] = (offsets[cat.id] || 0) + 1; p.textContent = pick(cat); });
       actions.append(other);
       if (cat.add) {
         const add = document.createElement('button');
-        add.type = 'button'; add.className = 'btn-quiet'; add.textContent = 'Añadir a mis tareas';
+        add.type = 'button'; add.className = 'btn-quiet'; add.textContent = S.addToTasks;
         add.addEventListener('click', () => {
-          if (addTask(p.textContent)) toast('Añadida a tus tareas de ' + dayName(state.day).toLowerCase() + '.');
-          else toast('Tus tareas aún no están listas. Inténtalo en un momento.');
+          if (addTask(p.textContent)) toast(S.addedTo(relName(state.day), fmtDate(fromKey(state.day))));
+          else toast(S.notReady);
         });
         actions.append(add);
       }
       card.append(label, p, actions);
-      host.append(card);
+      cards.push(card);
     });
+    host.replaceChildren.apply(host, cards);
   }
 
   /* ---------- Eventos ---------- */
@@ -742,7 +1134,20 @@ button { cursor: pointer; }
   });
   $('prev').addEventListener('click', () => openDay(shift(state.day, -1)));
   $('next').addEventListener('click', () => openDay(shift(state.day, 1)));
-  $('go-today').addEventListener('click', () => openDay(todayKey()));
+  els.goToday.addEventListener('click', () => { openDay(todayKey()); els.calBtn.focus(); });
+  els.calBtn.addEventListener('click', () => setCalOpen(!cal.open));
+  $('cal-prev').addEventListener('click', () => stepMonth(-1));
+  $('cal-next').addEventListener('click', () => stepMonth(1));
+  els.calDays.addEventListener('click', (e) => {
+    const b = e.target.closest ? e.target.closest('button[data-day]') : null;
+    if (!b) return;
+    openDay(b.dataset.day);
+    setCalOpen(false);
+    els.calBtn.focus();
+  });
+  els.cal.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') { setCalOpen(false); els.calBtn.focus(); }
+  });
   $('carry-yes').addEventListener('click', carryOver);
   $('carry-no').addEventListener('click', () => { carryDismissed = true; carry = null; renderCarry(); });
   $('lists').addEventListener('change', (e) => {
@@ -770,13 +1175,12 @@ button { cursor: pointer; }
   document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') flush(); });
 
   let lastToday = todayKey();
-  setInterval(() => { const t = todayKey(); if (t !== lastToday) { lastToday = t; renderDay(); renderCarry(); } }, 60000);
+  setInterval(() => { const t = todayKey(); if (t !== lastToday) { lastToday = t; buildNotes(); render(); } }, 60000);
 
   /* ---------- Arranque ---------- */
   async function boot() {
     applyView();
-    buildNotes();
-    render();
+    applyLang();
     let db = null, user = null, uid = null;
     try {
       if (window.claude && typeof window.claude.use === 'function') {
